@@ -1,0 +1,7 @@
+node_modules/
+dist/
+incoming/
+submission/
+SUBMISSION.md
+*.log
+.DS_Store

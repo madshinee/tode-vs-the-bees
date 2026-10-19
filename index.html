@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/tode.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Tode vs the Bees</title>
+  </head>
+  <body>
+    <canvas class="game"></canvas>
+    <div id="hurt"></div>
+    <canvas id="indicators"></canvas>
+    <canvas id="rhythm" width="420" height="96"></canvas>
+    <canvas id="radar" width="200" height="200" title="Radar: everything around you"></canvas>
+
+    <div id="hud">
+      <div id="player-card" class="glass">
+        <div id="level-badge">1</div>
+        <div class="bars">
+          <div class="bar health"><div id="health-fill"></div><span id="health-text"></span></div>
+          <div class="bar xp"><div id="xp-fill"></div></div>
+        </div>
+      </div>
+
+      <div id="stats" class="glass">
+        <div><small data-i18n="hud.wave">WAVE</small><b id="wave">1</b></div>
+        <div class="score"><small data-i18n="hud.score">SCORE</small><b id="score">0</b></div>
+        <div><small data-i18n="hud.best">BEST</small><b id="best">0</b></div>
+      </div>
+
+      <div id="pills">
+        <div id="p2-card" class="glass">
+          <span class="tag">P2</span>
+          <div class="bar health"><div id="p2-health-fill"></div><span id="p2-health-text"></span></div>
+        </div>
+        <div id="villages" class="glass"></div>
+        <div id="left" class="pill"></div>
+        <div id="kills" class="pill"></div>
+        <div id="blessing" class="pill hot"></div>
+        <div id="buff" class="pill hot"></div>
+        <div id="weapon" class="pill"></div>
+        <div id="combo" class="pill hot"></div>
+        <div id="ambush" class="pill"></div>
+      </div>
+    </div>
+
+    <button id="pause-btn" class="glass" title="Pause (P)" data-icon="pause"></button>
+
+    <div id="boss" class="glass">
+      <span id="boss-name">QUEEN BEE</span>
+      <div id="boss-bar"><div id="boss-fill"></div></div>
+    </div>
+
+    <div id="banner"></div>
+    <div id="hint" class="glass"></div>
+    <div id="trailer-card"></div>
+
+    <div id="dialogue" class="glass">
+      <div class="icon"></div>
+      <div>
+        <div class="name"></div>
+        <div class="text"></div>
+      </div>
+    </div>
+
+    <div id="abilities">
+      <div class="ability" id="ab-dash"><span class="icon" data-icon="dash"></span><span class="key">Shift</span><div class="cd"></div><span class="status"></span></div>
+      <div class="ability" id="ab-jump"><span class="icon" data-icon="jump"></span><span class="key">Q</span><div class="cd"></div><span class="status"></span></div>
+      <div class="ability" id="ab-ally"><span class="icon" data-icon="people"></span><span class="key">G</span><div class="cd"></div><span class="status"></span></div>
+      <div class="ability" id="ab-bomb"><span class="icon" data-icon="bomb"></span><span class="key">E</span><div class="cd"></div><span class="status"></span></div>
+      <div class="ability" id="ab-fly"><span class="icon" data-icon="wings"></span><span class="key">F</span><div class="cd"></div><span class="status"></span></div>
+    </div>
+
+    <div id="help"></div>
+
+    <div id="upgrades">
+      <h1 data-i18n="up.title">Choose an upgrade</h1>
+      <div id="cards"></div>
+      <p data-i18n="up.hint">Click a card or press 1, 2, 3</p>
+    </div>
+
+    <div id="gameover">
+      <h1 data-i18n="over.title">Game Over</h1>
+      <p id="final"></p>
+      <p data-i18n="over.hint">Press R or click to restart</p>
+    </div>
+    <div id="paused">
+      <div class="pause-card glass">
+        <h1 data-i18n="pause.title">Tactical pause</h1>
+        <p class="sub" data-i18n="pause.sub">The world is frozen.</p>
+        <div class="pause-grid">
+          <section><h2 data-i18n="pause.tode">Tode</h2><div id="pause-stats"></div></section>
+          <section><h2 data-i18n="pause.upgrades">Upgrades</h2><div id="pause-upgrades"></div></section>
+          <section><h2 data-i18n="pause.enemies">Know your enemy</h2><div id="pause-enemies"></div></section>
+        </div>
+        <p id="pause-tip" class="tip"></p>
+        <p class="sub" data-i18n="pause.resume">Press P to resume</p>
+        <button id="btn-settings-pause" class="ghost" data-i18n="btn.settings">Settings</button>
+      </div>
+    </div>
+
+    <div id="cutscene">
+      <div class="cut-sky"></div>
+      <div class="cut-sun"></div>
+      <div class="cut-huts"><i></i><i></i><i></i><i></i></div>
+      <svg class="cut-baobab" viewBox="0 0 200 240" aria-hidden="true">
+        <path d="M78 240 Q70 160 82 110 Q60 100 30 70 Q20 50 40 52 Q62 62 84 88 Q80 50 70 30 Q76 16 88 30 Q100 56 100 84 Q104 50 118 30 Q130 20 132 36 Q124 60 116 90 Q144 62 168 52 Q186 54 172 74 Q148 98 120 112 Q132 160 126 240Z" fill="#2a1a0e" />
+        <g fill="#2a1a0e"><ellipse cx="40" cy="48" rx="34" ry="15" /><ellipse cx="86" cy="22" rx="38" ry="15" /><ellipse cx="140" cy="30" rx="38" ry="15" /><ellipse cx="172" cy="56" rx="26" ry="12" /></g>
+      </svg>
+      <div class="cut-ground"></div>
+      <span class="cut-bee b1" data-icon="bee"></span>
+      <span class="cut-bee b2" data-icon="bee"></span>
+      <span class="cut-bee b3" data-icon="bee"></span>
+      <span class="cut-bee b4" data-icon="bee"></span>
+
+      <svg id="cut-man" class="cut-char left" viewBox="0 0 240 440" aria-label="Mamadou">
+        <defs>
+          <linearGradient id="m-skin" x1="0" x2="1"><stop offset="0" stop-color="#3f2515" /><stop offset="0.55" stop-color="#65402a" /><stop offset="1" stop-color="#8a5a3b" /></linearGradient>
+          <linearGradient id="m-robe" x1="0" x2="1"><stop offset="0" stop-color="#1b4f8a" /><stop offset="0.5" stop-color="#2d79c4" /><stop offset="1" stop-color="#1d5a9c" /></linearGradient>
+          <linearGradient id="m-gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a0" /><stop offset="1" stop-color="#e0a21f" /></linearGradient>
+          <linearGradient id="m-pants" x1="0" x2="1"><stop offset="0" stop-color="#d8e4f5" /><stop offset="1" stop-color="#9db6d8" /></linearGradient>
+        </defs>
+        <ellipse cx="120" cy="428" rx="92" ry="9" fill="#000" opacity="0.28" />
+        <g class="body">
+          <path d="M82 392 h30 l-2 30 h-28z M128 392 h30 l0 30 h-28z" fill="url(#m-pants)" />
+          <path d="M76 420 h40 q4 8 -2 10 h-40z M124 420 h40 q4 8 -2 10 h-40z" fill="#6b3f1d" />
+          <path d="M64 126 Q120 98 176 126 L208 404 Q120 422 32 404 Z" fill="url(#m-robe)" />
+          <g fill="none" stroke="#0d2c52" stroke-width="3" opacity="0.28" stroke-linecap="round">
+            <path d="M120 170 V410" /><path d="M92 160 Q82 290 62 408" /><path d="M148 160 Q158 290 178 408" />
+            <path d="M70 300 Q120 316 170 300" opacity="0.6" />
+          </g>
+          <path d="M98 114 L120 178 L142 114 Q120 122 98 114Z" fill="url(#m-skin)" />
+          <path d="M92 112 L120 190 L148 112 L158 118 L128 260 Q120 270 112 260 L82 118Z" fill="url(#m-gold)" />
+          <g fill="none" stroke="#8a5a00" stroke-width="2" opacity="0.7">
+            <path d="M120 190 V258" /><path d="M104 150 Q120 172 136 150" /><path d="M108 190 Q120 206 132 190" /><path d="M110 218 Q120 232 130 218" />
+          </g>
+        </g>
+        <g class="arm-l">
+          <path d="M68 126 Q54 160 54 204 L88 204 Q94 160 92 132 Z" fill="url(#m-robe)" stroke="#0d2c52" stroke-width="2" stroke-opacity="0.55" stroke-linejoin="round" />
+          <g class="fore-l">
+            <path d="M54 200 Q50 238 56 262 L86 262 Q94 238 88 200 Z" fill="url(#m-robe)" stroke="#0d2c52" stroke-width="2" stroke-opacity="0.55" stroke-linejoin="round" />
+            <path d="M55 258 Q71 268 87 258" stroke="url(#m-gold)" stroke-width="6" fill="none" stroke-linecap="round" />
+            <path d="M58 262 Q52 284 60 296 Q70 304 80 296 Q88 284 84 262 Z" fill="url(#m-skin)" />
+            <ellipse cx="86" cy="276" rx="4.5" ry="9" transform="rotate(-20 86 276)" fill="url(#m-skin)" />
+            <path d="M64 296 v-12 M71 296 v-12 M78 296 v-12" stroke="#000" stroke-opacity="0.22" stroke-width="1.6" stroke-linecap="round" fill="none" />
+          </g>
+        </g>
+        <g class="arm-r">
+          <path d="M 172 126 Q 186 160 186 204 L 152 204 Q 146 160 148 132 Z" fill="url(#m-robe)" stroke="#0d2c52" stroke-width="2" stroke-opacity="0.55" stroke-linejoin="round" />
+          <g class="fore-r">
+            <path d="M 186 200 Q 190 238 184 262 L 154 262 Q 146 238 152 200 Z" fill="url(#m-robe)" stroke="#0d2c52" stroke-width="2" stroke-opacity="0.55" stroke-linejoin="round" />
+            <path d="M 185 258 Q 169 268 153 258" stroke="url(#m-gold)" stroke-width="6" fill="none" stroke-linecap="round" />
+            <path d="M 182 262 Q 188 284 180 296 Q 170 304 160 296 Q 152 284 156 262 Z" fill="url(#m-skin)" />
+            <ellipse cx="154" cy="276" rx="4.5" ry="9" transform="rotate(20 154 276)" fill="url(#m-skin)" />
+            <path d="M176 296 v-12 M169 296 v-12 M162 296 v-12" stroke="#000" stroke-opacity="0.22" stroke-width="1.6" stroke-linecap="round" fill="none" />
+          </g>
+        </g>
+        <g class="head">
+          <rect x="108" y="92" width="24" height="28" rx="8" fill="url(#m-skin)" />
+          <ellipse cx="120" cy="70" rx="31" ry="37" fill="url(#m-skin)" />
+          <ellipse cx="88" cy="74" rx="6" ry="10" fill="#4a2d1a" /><ellipse cx="152" cy="74" rx="6" ry="10" fill="#6b4128" />
+          <path d="M86 52 Q120 8 154 52 L154 62 Q120 72 86 62Z" fill="#fbf7ee" />
+          <path d="M86 56 Q120 70 154 56" fill="none" stroke="url(#m-gold)" stroke-width="5" />
+          <g fill="#e0a21f"><circle cx="104" cy="40" r="3" /><circle cx="120" cy="34" r="3" /><circle cx="136" cy="40" r="3" /></g>
+          <g class="brows" fill="none" stroke="#1e100a" stroke-width="3" stroke-linecap="round">
+            <path d="M97 62 L114 55" /><path d="M126 55 L143 62" />
+            <path d="M120 74 q-5 9 0 11" stroke="#2a160c" stroke-width="2" opacity="0.7" />
+          </g>
+          <g class="eyes">
+            <ellipse cx="107" cy="70" rx="6.5" ry="4.5" fill="#fff" /><ellipse cx="133" cy="70" rx="6.5" ry="4.5" fill="#fff" />
+            <g class="pupils"><circle cx="108" cy="70.5" r="3" fill="#1e100a" /><circle cx="132" cy="70.5" r="3" fill="#1e100a" /></g>
+          </g>
+          <path d="M94 88 Q120 130 146 88 Q146 112 120 118 Q94 112 94 88Z" fill="#1c110a" opacity="0.8" />
+          <ellipse class="mouth" cx="120" cy="100" rx="8" ry="4.5" fill="#4a1414" />
+          <path class="smile" d="M108 98 Q120 110 132 98" fill="none" stroke="#f3dcc0" stroke-width="3.5" stroke-linecap="round" />
+        </g>
+      </svg>
+
+      <svg id="cut-woman" class="cut-char right" viewBox="0 0 240 440" aria-label="Awa">
+        <defs>
+          <linearGradient id="w-skin" x1="0" x2="1"><stop offset="0" stop-color="#4e2f1c" /><stop offset="0.55" stop-color="#7a4b2f" /><stop offset="1" stop-color="#9b653f" /></linearGradient>
+          <linearGradient id="w-gele" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd54f" /><stop offset="1" stop-color="#f08a00" /></linearGradient>
+          <linearGradient id="w-top" x1="0" x2="1"><stop offset="0" stop-color="#14705a" /><stop offset="1" stop-color="#26a583" /></linearGradient>
+          <linearGradient id="w-gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a0" /><stop offset="1" stop-color="#e0a21f" /></linearGradient>
+          <pattern id="w-wax" width="46" height="46" patternUnits="userSpaceOnUse">
+            <rect width="46" height="46" fill="#b3226b" />
+            <circle cx="23" cy="23" r="15" fill="#ffca28" /><circle cx="23" cy="23" r="9" fill="#b3226b" /><circle cx="23" cy="23" r="4" fill="#26c6da" />
+            <path d="M0 0 L8 0 L0 8Z M46 0 L38 0 L46 8Z M0 46 L8 46 L0 38Z M46 46 L38 46 L46 38Z" fill="#26c6da" />
+          </pattern>
+        </defs>
+        <ellipse cx="120" cy="428" rx="92" ry="9" fill="#000" opacity="0.28" />
+        <g class="body">
+          <path d="M70 232 Q120 244 170 232 L198 408 Q120 424 42 408 Z" fill="url(#w-wax)" />
+          <path d="M70 232 Q120 244 170 232 L198 408 Q120 424 42 408 Z" fill="#2a0a1a" opacity="0.14" />
+          <g fill="none" stroke="#2a0a1a" stroke-width="3" opacity="0.3" stroke-linecap="round">
+            <path d="M120 244 V414" /><path d="M92 240 Q82 330 62 410" /><path d="M148 240 Q158 330 178 410" />
+          </g>
+          <path d="M76 238 L188 380 L172 394 L64 252Z" fill="#26c6da" opacity="0.85" />
+          <path d="M76 238 L188 380" stroke="#e0a21f" stroke-width="3" opacity="0.9" />
+          <path d="M80 418 h40 q4 8 -2 10 h-40z M124 418 h40 q4 8 -2 10 h-40z" fill="#6b3f1d" />
+          <path d="M82 128 Q120 112 158 128 L166 238 Q120 252 74 238Z" fill="url(#w-top)" />
+          <path d="M74 232 Q120 246 166 232" fill="none" stroke="url(#w-gold)" stroke-width="7" />
+          <path d="M94 118 Q120 168 146 118" fill="none" stroke="url(#w-gold)" stroke-width="4" />
+          <circle cx="120" cy="156" r="9" fill="url(#w-gold)" /><circle cx="120" cy="156" r="4" fill="#b3226b" />
+          <path d="M100 116 Q120 136 140 116" fill="url(#w-skin)" />
+        </g>
+        <g class="arm-l">
+          <path d="M68 126 Q54 160 54 204 L88 204 Q94 160 92 132 Z" fill="url(#w-wax)" stroke="#2a0a1a" stroke-width="2" stroke-opacity="0.55" stroke-linejoin="round" />
+          <g class="fore-l">
+            <path d="M54 200 Q50 238 56 262 L86 262 Q94 238 88 200 Z" fill="url(#w-wax)" stroke="#2a0a1a" stroke-width="2" stroke-opacity="0.55" stroke-linejoin="round" />
+            <path d="M55 258 Q71 268 87 258" stroke="url(#w-gold)" stroke-width="6" fill="none" stroke-linecap="round" />
+            <path d="M58 262 Q52 284 60 296 Q70 304 80 296 Q88 284 84 262 Z" fill="url(#w-skin)" />
+            <ellipse cx="86" cy="276" rx="4.5" ry="9" transform="rotate(-20 86 276)" fill="url(#w-skin)" />
+            <path d="M64 296 v-12 M71 296 v-12 M78 296 v-12" stroke="#000" stroke-opacity="0.22" stroke-width="1.6" stroke-linecap="round" fill="none" />
+          </g>
+        </g>
+        <g class="arm-r">
+          <path d="M 172 126 Q 186 160 186 204 L 152 204 Q 146 160 148 132 Z" fill="url(#w-wax)" stroke="#2a0a1a" stroke-width="2" stroke-opacity="0.55" stroke-linejoin="round" />
+          <g class="fore-r">
+            <path d="M 186 200 Q 190 238 184 262 L 154 262 Q 146 238 152 200 Z" fill="url(#w-wax)" stroke="#2a0a1a" stroke-width="2" stroke-opacity="0.55" stroke-linejoin="round" />
+            <path d="M 185 258 Q 169 268 153 258" stroke="url(#w-gold)" stroke-width="6" fill="none" stroke-linecap="round" />
+            <path d="M 182 262 Q 188 284 180 296 Q 170 304 160 296 Q 152 284 156 262 Z" fill="url(#w-skin)" />
+            <ellipse cx="154" cy="276" rx="4.5" ry="9" transform="rotate(20 154 276)" fill="url(#w-skin)" />
+            <path d="M176 296 v-12 M169 296 v-12 M162 296 v-12" stroke="#000" stroke-opacity="0.22" stroke-width="1.6" stroke-linecap="round" fill="none" />
+          </g>
+        </g>
+        <g class="head">
+          <rect x="109" y="92" width="22" height="30" rx="8" fill="url(#w-skin)" />
+          <ellipse cx="120" cy="72" rx="29" ry="35" fill="url(#w-skin)" />
+          <circle cx="90" cy="82" r="6" fill="url(#w-gold)" /><circle cx="150" cy="82" r="6" fill="url(#w-gold)" />
+          <circle cx="90" cy="92" r="3.5" fill="#26c6da" /><circle cx="150" cy="92" r="3.5" fill="#26c6da" />
+          <path d="M84 64 Q76 14 126 8 Q172 8 160 64 Q140 44 120 46 Q100 44 84 64Z" fill="url(#w-gele)" />
+          <g fill="none" stroke="#b86500" stroke-width="3" opacity="0.55" stroke-linecap="round">
+            <path d="M92 52 Q110 18 140 22" /><path d="M100 56 Q120 28 152 34" /><path d="M88 60 Q96 34 120 26" />
+          </g>
+          <path d="M148 18 Q196 -2 188 40 Q172 18 152 34Z" fill="url(#w-gele)" />
+          <path d="M150 24 Q178 14 184 34" fill="none" stroke="#b86500" stroke-width="3" opacity="0.55" />
+          <g class="brows" fill="none" stroke="#1e100a" stroke-width="2.8" stroke-linecap="round">
+            <path d="M99 66 L115 60" /><path d="M125 60 L141 66" />
+            <path d="M120 78 q-4 8 0 10" stroke="#2a160c" stroke-width="2" opacity="0.6" />
+          </g>
+          <g class="eyes">
+            <ellipse cx="108" cy="74" rx="6" ry="4.3" fill="#fff" /><ellipse cx="132" cy="74" rx="6" ry="4.3" fill="#fff" />
+            <g class="pupils"><circle cx="109" cy="74.5" r="2.8" fill="#1e100a" /><circle cx="131" cy="74.5" r="2.8" fill="#1e100a" /></g>
+          </g>
+          <path d="M101 72 l-3 -2 M139 72 l3 -2" stroke="#1e100a" stroke-width="2" />
+          <ellipse class="mouth" cx="120" cy="100" rx="9" ry="4.5" fill="#8a1f3d" />
+          <path class="smile" d="M108 98 Q120 111 132 98" fill="none" stroke="#c2185b" stroke-width="4" stroke-linecap="round" />
+        </g>
+      </svg>
+
+      <svg id="cut-frog" class="cut-frog" viewBox="0 0 240 270" aria-label="Tode">
+        <defs>
+          <linearGradient id="f-body" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#63d974" /><stop offset="1" stop-color="#2a8d40" /></linearGradient>
+          <linearGradient id="f-belly" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4fcc9" /><stop offset="1" stop-color="#cfe99a" /></linearGradient>
+        </defs>
+        <ellipse cx="120" cy="260" rx="86" ry="9" fill="#000" opacity="0.3" />
+        <g class="f-body">
+          <path d="M34 206 Q4 216 8 248 Q50 258 90 242 Q104 218 84 194Z" fill="url(#f-body)" />
+          <path d="M206 206 Q236 216 232 248 Q190 258 150 242 Q136 218 156 194Z" fill="url(#f-body)" />
+          <g fill="#46b55a"><ellipse cx="12" cy="250" rx="9" ry="6" /><ellipse cx="32" cy="256" rx="9" ry="6" /><ellipse cx="54" cy="256" rx="9" ry="6" />
+            <ellipse cx="228" cy="250" rx="9" ry="6" /><ellipse cx="208" cy="256" rx="9" ry="6" /><ellipse cx="186" cy="256" rx="9" ry="6" /></g>
+          <ellipse cx="120" cy="180" rx="64" ry="72" fill="url(#f-body)" />
+          <ellipse cx="120" cy="196" rx="42" ry="52" fill="url(#f-belly)" />
+          <g fill="none" stroke="#b9d27e" stroke-width="3" stroke-linecap="round" opacity="0.8"><path d="M92 190 Q120 202 148 190" /><path d="M96 214 Q120 224 144 214" /></g>
+          <!-- scarf in the bright green, yellow and red -->
+          <path d="M58 138 Q120 164 182 138 L181 147 Q120 173 59 147Z" fill="#00853f" />
+          <path d="M59 147 Q120 173 181 147 L180 156 Q120 182 60 156Z" fill="#fdef42" />
+          <path d="M60 156 Q120 182 180 156 L178 165 Q120 191 62 165Z" fill="#e31b23" />
+          <path d="M150 172 l24 6 l-12 46 l-24 -8Z" fill="#e31b23" /><path d="M156 188 l17 4 l-3 13 l-17 -4Z" fill="#fdef42" />
+        </g>
+        <g class="f-arm-l">
+          <path d="M66 160 Q30 182 32 220 Q48 230 60 218 Q62 192 80 178Z" fill="url(#f-body)" />
+          <ellipse cx="40" cy="224" rx="14" ry="12" fill="#46b55a" />
+        </g>
+        <g class="f-arm-r">
+          <path d="M174 160 Q210 182 208 220 Q192 230 180 218 Q178 192 160 178Z" fill="url(#f-body)" />
+          <ellipse cx="200" cy="224" rx="14" ry="12" fill="#46b55a" />
+        </g>
+        <g class="f-head">
+          <ellipse cx="120" cy="98" rx="76" ry="54" fill="url(#f-body)" />
+          <circle cx="76" cy="56" r="32" fill="#54c866" /><circle cx="164" cy="56" r="32" fill="#54c866" />
+          <g class="f-eyes">
+            <circle cx="76" cy="56" r="24" fill="#fff" /><circle cx="164" cy="56" r="24" fill="#fff" />
+            <g class="f-pupils">
+              <circle cx="80" cy="58" r="12" fill="#1b1b1b" /><circle cx="160" cy="58" r="12" fill="#1b1b1b" />
+              <circle cx="85" cy="52" r="4.5" fill="#fff" /><circle cx="165" cy="52" r="4.5" fill="#fff" />
+            </g>
+          </g>
+          <g fill="none" stroke="#1d6b30" stroke-width="6" stroke-linecap="round"><path d="M46 34 L104 44" /><path d="M194 34 L136 44" /></g>
+          <circle cx="46" cy="112" r="10" fill="#ff9aa2" opacity="0.55" /><circle cx="194" cy="112" r="10" fill="#ff9aa2" opacity="0.55" />
+          <circle cx="112" cy="84" r="3" fill="#1d6b30" /><circle cx="128" cy="84" r="3" fill="#1d6b30" />
+          <path class="f-smile" d="M58 106 Q120 150 182 106" fill="none" stroke="#1d5e2c" stroke-width="6" stroke-linecap="round" />
+          <g class="f-mouth"><ellipse cx="120" cy="124" rx="32" ry="14" fill="#4a1c1c" /><ellipse cx="120" cy="132" rx="17" ry="6" fill="#e0687a" /></g>
+        </g>
+      </svg>
+
+      <div id="cut-bubble" class="cut-bubble">
+        <div id="cut-name" class="cut-name"></div>
+        <div id="cut-wolof" class="cut-wolof"></div>
+        <div id="cut-english" class="cut-english"></div>
+      </div>
+
+      <button id="cut-skip" class="cut-skip" data-i18n="cut.skip">Skip ›</button>
+      <div class="cut-hint" data-i18n="cut.hint">Click or press Space to continue</div>
+    </div>
+
+    <div id="rotate" data-i18n="rotate.hint">Turn your phone sideways to play</div>
+    <div id="online-overlay" class="overlay">
+      <div class="panel glass">
+        <h1 data-i18n="online.title">Play with a friend</h1>
+        <p data-i18n="online.intro"></p>
+        <input id="online-link" readonly />
+        <div class="online-buttons">
+          <button id="online-copy" class="ghost" data-i18n="online.copy">Copy link</button>
+          <button id="online-start" class="ghost" disabled data-i18n="online.start">Start</button>
+        </div>
+        <p id="online-status" class="online-status"></p>
+        <p class="online-note" data-i18n="online.note"></p>
+        <button id="online-close" class="ghost" data-i18n="btn.close">Close</button>
+      </div>
+    </div>
+    <div id="guest">
+      <video id="guest-video" autoplay playsinline></video>
+      <div id="guest-hud" class="glass"></div>
+      <div id="guest-panel" class="glass">
+        <h1 data-i18n="guest.title">Join your friend</h1>
+        <p data-i18n="guest.intro"></p>
+        <button id="guest-join" class="ghost" data-i18n="guest.join">Join the game</button>
+        <p id="guest-status"></p>
+      </div>
+    </div>
+    <div id="title">
+      <div class="title-card">
+        <h1 data-i18n-html="title.name">Tode <span>vs</span> the Bees</h1>
+        <p class="tagline" data-i18n="title.tagline"></p>
+        <div class="option-row">
+          <span data-i18n="opt.difficulty">Difficulty</span>
+          <div class="seg">
+            <button class="diff" data-diff="easy" data-i18n="diff.easy">Easy</button>
+            <button class="diff" data-diff="normal" data-i18n="diff.normal">Normal</button>
+            <button class="diff" data-diff="hard" data-i18n="diff.hard">Hard</button>
+          </div>
+        </div>
+        <div class="option-row">
+          <span data-i18n="opt.mode">Mode</span>
+          <div class="seg">
+            <button class="diff" data-mode="1" data-i18n="mode.1">1 Player</button>
+            <button class="diff" data-mode="2" data-i18n="mode.2">2 Players</button>
+          </div>
+        </div>
+        <div class="option-row">
+          <span data-i18n="opt.outfit">Outfit</span>
+          <div class="seg">
+            <button class="diff" data-outfit="none" data-i18n="outfit.none">Classic</button>
+            <button class="diff" data-outfit="boubou" data-i18n="outfit.boubou">Boubou</button>
+            <button class="diff" data-outfit="wax" data-i18n="outfit.wax">Wax</button>
+            <button class="diff" data-outfit="sahel" data-i18n="outfit.sahel">Teranga</button>
+          </div>
+        </div>
+        <button id="play" disabled data-i18n="loading">Loading...</button>
+        <ul class="controls">
+          <li data-i18n-html="controls.1"></li>
+          <li data-i18n-html="controls.2"></li>
+          <li data-i18n-html="controls.3"></li>
+          <li data-i18n-html="controls.4"></li>
+          <li data-i18n-html="controls.5"></li>
+        </ul>
+        <div class="title-actions">
+          <button id="btn-achievements" class="ghost" data-i18n="btn.achievements">Achievements</button>
+          <button id="btn-daily" class="ghost" data-i18n="btn.daily">Daily challenge</button>
+          <button id="btn-online" class="ghost" data-i18n="btn.online">Play with a friend online</button>
+          <button id="btn-settings" class="ghost" data-i18n="btn.settings">Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="settings-overlay" class="overlay">
+      <div class="panel glass">
+        <h1 data-i18n="set.title">Settings</h1>
+        <label class="setting-row"><span data-i18n="set.music">Music</span><input id="set-music" type="range" min="0" max="100" /></label>
+        <label class="setting-row"><span data-i18n="set.sfx">Sound effects</span><input id="set-sfx" type="range" min="0" max="100" /></label>
+        <div class="setting-row">
+          <span data-i18n="set.language">Language</span>
+          <div class="seg"><button class="diff" data-lang="en">English</button><button class="diff" data-lang="fr">Français</button></div>
+        </div>
+        <div class="setting-row">
+          <span data-i18n="set.shake">Screen shake</span>
+          <div class="seg"><button class="diff" data-shake="on" data-i18n="set.on">On</button><button class="diff" data-shake="off" data-i18n="set.off">Off</button></div>
+        </div>
+        <button id="settings-close" class="ghost" data-i18n="btn.close">Close</button>
+      </div>
+    </div>
+
+    <div id="ach-overlay" class="overlay">
+      <div class="panel glass wide">
+        <h1 data-i18n="ach.title">Achievements</h1>
+        <div id="ach-stats"></div>
+        <div id="ach-list"></div>
+        <button id="ach-close" class="ghost" data-i18n="btn.close">Close</button>
+      </div>
+    </div>
+
+    <div id="toasts"></div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

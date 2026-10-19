@@ -1,0 +1,105 @@
+# Tode vs the Bees
+
+A 3D wave-survival game built with **Three.js** and **Vite** for the JB-BYGC. The Queen Bee's swarm is invading the villages of a West African-inspired savanna. You are
+**Tode**, a frog who has to defend the villages, level up, evolve and wear the crown.
+
+Playable in English and French, with keyboard and mouse, a gamepad, a touch screen, or two players on one keyboard.
+
+## Run it
+
+```bash
+npm install
+npm run dev      # play at http://localhost:5173
+npm run build    # production build in dist/
+npm run preview  # try the production build
+```
+
+## Controls
+
+| Keyboard / mouse | Gamepad | Touch | Action |
+| --- | --- | --- | --- |
+| WASD / ZQSD (or arrows) | Left stick | Left stick | Move |
+| Mouse | Right stick | Right stick | Aim (touch: the right stick also shoots) |
+| Click / Space | RT or A | Right stick | Shoot |
+| Shift | B | Button | Dash (brief invulnerability) |
+| Q | X | Button | Jump over enemies, landing shockwave (Level 3) |
+| G | LB | Button | Call a friend who shoots for you (Level 5) |
+| E | Y | Button | Drop a bomb (Level 6) |
+| F | RB | Button | Fly for 4 seconds (Level 8) |
+| B | LT | Button | Hit the drum on the beat (near a griot) |
+| P / Esc / pause button | Start | Pause button | Tactical pause: stats, upgrades and an enemy guide |
+| Mouse wheel | | | Zoom the camera |
+| M | | | Toggle music |
+
+Stand still for 2 seconds (Level 2) to charge an **ambush** shot: triple damage and piercing.
+
+**Two players on one keyboard:** pick *2 Players* on the title screen. Player 1 uses WASD/ZQSD and the
+mouse. Player 2 uses the arrow keys, **Enter** to shoot (auto-aim) and **Right Shift** to dash. Fallen
+players get back up after the wave.
+
+## What makes it different
+
+- **Defend the villages.** Some bees are *raiders* (orange ring): they fly to a village and attack it.
+  Each village has a safety bar. Get close to a raider and it turns on you. If a village falls, its
+  villagers are lost and its griot goes silent. If all villages fall, the Queen wins.
+- **A living story, with real motion capture.** An opening scene shows two villagers talking in **Wolof** (with subtitles) about
+  the bees until Tode hops in. In the game the villagers shout in Wolof ("Daw!", "Wallu ma!", "Dugg ci
+  kër gi!") and run into their huts during a battle; when Tode wins the wave they run out, gather
+  around him and dance to a sabar drum roll.
+- **Sabar rhythm mini-game.** Stand next to a griot (musician), who also heals you, and press B on the
+  drum beat. Every 6 hits in a row gives *Sabar power*: faster movement and stronger shots.
+- **Two bosses.** The Queen Bee (every 5 waves) splits into shadow clones at 66% and 33% health. The
+  Giant Hornet (every 10 waves) glows before a fast charge and fires fans of shots.
+- **Rainy season storms.** Some waves bring rain, a darker sky, and lightning that strikes the bees.
+- **Tode evolves.** XP and levels make the frog grow and unlock a helmet, cape, wings and a crown, each
+  with a new ability (ambush, jump, friend, bomb, flight). Pick upgrade cards between waves.
+- **African outfits** for Tode on the title screen: boubou with a kufi cap, wax-print cape and head
+  wrap, or a scarf in bright green, yellow and red.
+- **Costumed enemies**: ninja bees, shielded tanks, cannon-carrying gunners, and a crowned queen.
+- **Achievements and stats**, saved in the browser.
+- **Daily challenge**: the same bees for everybody on a given day, with its own best score.
+- **Griot tales and proverbs**: a short tale between waves and a proverb on every upgrade card.
+- **An island by the sea**: beach, palm trees and brightly painted fishing pirogues (with fishermen in boubous) bobbing on the waves.
+- **Online co-op**: share a link, a friend plays the orange frog on his own screen; kills are counted per player.
+- **Three landscapes** that change every 5 waves: golden savanna, burnt savanna, river lands.
+- **Village quests**: a village asks for help each wave; keep it above 60% safety for a reward.
+- **Party time**: slow-motion on a boss's last blow, then falling petals and an orbiting camera while the villagers dance.
+- **Adaptive quality**: the game lowers its resolution by itself on slow computers.
+- **360-degree awareness**: a radar, edge arrows pointing at enemies and attacked villages, and a
+  glowing ring under every enemy.
+- **Living bees**: flapping wings and a tumbling death animation (from the course model's own clips), plus a first-minutes tutorial and a `?trailer` mode where Tode plays by himself for recording a video.
+- **Combat feedback**: red screen edge when hurt and a heartbeat glow at low health, kill-streak announcements, golden elite bees from wave 7, a "bees left" counter and a crosshair cursor.
+- **Juice**: screen shake, floating damage numbers, buzzing bees, a hopping hand-built frog.
+- **Tactical pause** to plan your strategy, a day/night cycle, combos, power-ups and three difficulties.
+
+## Score
+
+Defined in `src/components/scoring.js`: 1 point for every 10 seconds survived (`SCORE_PER_SECOND = 0.1`),
+10 points per enemy defeated (`SCORE_PER_KILL = 10`), a combo multiplier on kills (set
+`MAX_COMBO_MULTIPLIER = 1` to remove it) and a bonus for every village still standing when a wave is won.
+The displayed score is rounded down.
+
+## Made with
+
+- **Three.js** (3D) and **Vite**. No game engine, no audio files, no image files.
+- The bee model comes from the course. The people (villagers, Mamadou and Awa) are the free **Adobe Mixamo** mannequins (X Bot and Y Bot) with Mixamo's motion-captured animations (idle, talking, walking, running, terrified, cheering, dancing); the boubous, wax cloth, gele, caps and jewellery are built in code. Everything else is original: the frog, the huts, villagers, griots,
+  trees, the icons (SVG) and the characters of the opening scene are built in code.
+- **All the music and sound effects are synthesized** with the Web Audio API (a kora, gungung, sabar and
+  tama groove inspired by mbalax).
+- Written with the help of an AI coding agent, prompt by prompt, checking each step.
+
+## Project layout
+
+- `src/main.js`: scene, input, game loop, waves
+- `src/components/`: player, frog, enemies, gear (costumes), defense (villages), villagers, griots,
+  rhythm, weather, bullets, bombs, pickups, effects, juice, environment, map, upgrades, achievements,
+  dialogue, cutscene, hud, radar, icons, menus, i18n/locales, input and touch, audio (sfx + music)
+- `public/models/`: the bee model and house from the course, the frog, and the Mixamo mannequins plus animations for the people (see Credits)
+
+## Debug URLs
+
+`?level=10`, `?wave=5`, `?time=90`, `?zoom=2`, `?spawn` (next to a griot), `?village` and `?debug`
+(K makes the villagers cheer) jump to a level, wave, time of day, zoom or place. `?touch` shows the
+touch controls on a computer.
+
+> The Wolof lines were written with care but should be checked by a native speaker.
