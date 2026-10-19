@@ -16,6 +16,7 @@ export const ACHIEVEMENTS = [
   { id: 'crowned', icon: 'crown' },
   { id: 'rhythm_master', icon: 'drum' },
   { id: 'storm_walker', icon: 'bolt' },
+  { id: 'together', icon: 'people' },
   { id: 'marathon', icon: 'boots' },
   { id: 'sabar_dance', icon: 'drum' },
 ];

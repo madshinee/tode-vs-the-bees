@@ -232,7 +232,7 @@ window.addEventListener('keydown', (e) => {
   if (params.has('debug') && e.code === 'KeyK') celebrate(6, t('say.cheer.1'));
 
   // Player 2: right shift dashes
-  if (state.coop && !state.remote && e.code === 'ShiftRight' && !player2.dead && player2.tryDash(keys)) {
+  if (false) {
     sfx.dash();
     effects.burst(player2.position, 0xffcc88, 10, 0.2, 4);
   }
@@ -873,6 +873,44 @@ function fireFrom(p, ambush) {
   p.shotFired();
 }
 
+// Player 2 is a computer-controlled partner: it stays close to Tode, keeps its
+// distance from the bees and fires at the nearest one.
+const botKeys = new Set();
+function botThink(dt) {
+  botKeys.clear();
+  if (player2.dead) return;
+  const me = player2.position;
+  const buddy = player.dead ? null : player.position;
+  let enemy = null;
+  let best = 30;
+  for (const e of enemies.list) {
+    const d = e.mesh.position.distanceTo(me);
+    if (d < best) {
+      best = d;
+      enemy = e.mesh.position;
+    }
+  }
+  const go = (tx, tz, sign = 1) => {
+    const dx = (tx - me.x) * sign;
+    const dz = (tz - me.z) * sign;
+    if (Math.abs(dx) > 0.8) botKeys.add(dx > 0 ? 'ArrowRight' : 'ArrowLeft');
+    if (Math.abs(dz) > 0.8) botKeys.add(dz > 0 ? 'ArrowDown' : 'ArrowUp');
+  };
+  const buddyDist = buddy ? Math.hypot(buddy.x - me.x, buddy.z - me.z) : 0;
+  if (buddy && buddyDist > 10) {
+    go(buddy.x, buddy.z); // too far from Tode: catch up
+  } else if (enemy) {
+    if (best < 6) go(enemy.x, enemy.z, -1); // back away
+    else if (best > 12 && (!buddy || buddyDist < 8)) go(enemy.x, enemy.z); // get in range
+    else botKeys.add(Math.sin(performance.now() / 2200) > 0 ? 'ArrowRight' : 'ArrowLeft'); // strafe
+    if (best < 3 && Math.random() < 2 * dt && player2.tryDash(botKeys)) sfx.dash();
+  } else if (buddy && buddyDist > 4) {
+    go(buddy.x, buddy.z); // stay with Tode
+  } else if (buddy && buddyDist < 2) {
+    go(buddy.x, buddy.z, -1); // do not stand on top of him
+  }
+}
+
 function updatePlayers(dt) {
   // Player 1 aims with the mouse
   raycaster.setFromCamera(mouse, camera);
@@ -881,7 +919,7 @@ function updatePlayers(dt) {
   if (input.aim.active) {
     aimPoint.set(player.position.x + input.aim.x * 10, 0, player.position.z + input.aim.y * 10);
   }
-  player.controls = state.coop ? P1_COOP_CONTROLS : P1_CONTROLS;
+  player.controls = state.coop && state.remote ? P1_COOP_CONTROLS : P1_CONTROLS;
 
   // keyboard keys plus the left stick, as virtual WASD presses
   virtualKeys.clear();
@@ -917,7 +955,8 @@ function updatePlayers(dt) {
   if (state.coop && !player2.dead) {
     const target = nearestEnemyPoint(player2.position);
     aimPoint2.copy(target || player2.position.clone().addScaledVector(player2.aimDir, 5));
-    const p2keys = state.remote ? remoteKeys : keys;
+    const p2keys = state.remote ? remoteKeys : botKeys;
+    if (!state.remote) botThink(dt);
     if (state.remote) {
       remoteKeys.clear();
       if (remote.mx > 0.3) remoteKeys.add('ArrowRight');
@@ -936,7 +975,7 @@ function updatePlayers(dt) {
     if (player2.dashTime > 0) effects.burst(player2.position, 0xffcc88, 1, 0.25, 2);
     // Player 2 also fires by himself at bees that are close, so one hand is enough to play him
     const p2near = target && target.distanceTo(player2.position) < 16;
-    const p2shoot = p2near || (state.remote ? remote.shoot : keys.has('Enter') || keys.has('NumpadEnter'));
+    const p2shoot = p2near || (state.remote && remote.shoot);
     if (p2shoot && player2.canShoot()) fireFrom(player2, false);
 
     // Keep the two players on the same screen
@@ -1264,7 +1303,7 @@ const saved = (key, fallback, allowed) => {
   return allowed.includes(value) ? value : fallback;
 };
 selectDifficulty(saved('difficulty', 'normal', Object.keys(DIFFICULTIES)));
-selectMode('1'); // 2-player co-op is switched off: one hero, one village to save
+selectMode(saved('mode', '1', ['1', '2']));
 selectOutfit(saved('outfit', 'none', ['none', 'boubou', 'wax', 'sahel']));
 $('play').disabled = false;
 $('play').dataset.i18n = 'play';
