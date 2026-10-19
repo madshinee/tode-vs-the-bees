@@ -3,7 +3,7 @@
 A 3D wave-survival game built with **Three.js** and **Vite** for the JB-BYGC. The Queen Bee's swarm is invading the villages of a West African-inspired savanna. You are
 **Tode**, a frog who has to defend the villages, level up, evolve and wear the crown.
 
-Playable in English and French, with keyboard and mouse, a gamepad, or a touch screen.
+Playable in English and French, with keyboard and mouse, a gamepad, or a touch screen, alone or with a computer partner.
 
 ## Run it
 
@@ -32,6 +32,11 @@ npm run preview  # try the production build
 | M | | | Toggle music |
 
 Stand still for 2 seconds (Level 2) to charge an **ambush** shot: triple damage and piercing.
+
+**2 Players mode:** pick *2 Players* on the title screen. You play Tode as usual; **Player 2 (the orange frog)
+is a computer-controlled partner**, not a human. It follows you, keeps its distance from the bees and shoots
+on its own, but it is balanced as a helper: it fires slower, misses a little, hits softer and only gets half of
+your upgrades. The harder the difficulty, the less it helps. A fallen partner gets back up after the wave.
 
 ## What makes it different
 
