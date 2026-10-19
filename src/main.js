@@ -311,7 +311,7 @@ window.addEventListener('resize', () => {
 resizeIndicators($('indicators'));
 
 // Load assets
-const enemyModel = await loadModel('/models/enemy.glb', 2);
+const enemyModel = await loadModel(`${import.meta.env.BASE_URL}models/enemy.glb`, 2);
 const frogGreen = createFrogModel('green'); // Tode
 const frogOrange = createFrogModel('orange'); // player 2 and the friend
 

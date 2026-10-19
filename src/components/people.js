@@ -8,7 +8,7 @@ import { dress } from './outfits.js';
 // clips (idle, talking, walking, running, terrified, cheering, dancing), dressed
 // in traditional African clothes built in code.
 const loader = new FBXLoader();
-const BASE = '/models/people/';
+const BASE = `${import.meta.env.BASE_URL}models/people/`;
 
 const CLIPS = {
   idle: 'idle.fbx',
