@@ -146,6 +146,15 @@ const DIFFICULTIES = {
   hard: { speed: 1.15, damage: 1.4, count: 1.3 },
 };
 
+// The computer partner (P2) helps without stealing the show: it fires slower, misses a little,
+// has a shorter reach and hits softer. The harder the game, the less it helps.
+const PARTNER = {
+  easy: { rate: 0.8, damage: 0.9, range: 13, miss: 0.08 },
+  normal: { rate: 0.55, damage: 0.7, range: 11, miss: 0.12 },
+  hard: { rate: 0.35, damage: 0.55, range: 9, miss: 0.18 },
+};
+const partner = () => PARTNER[state.difficulty] || PARTNER.normal;
+
 const state = {
   started: false,
   paused: false,
@@ -546,7 +555,12 @@ function waveCleared() {
 function chooseUpgrade(index) {
   const upgrade = state.options[index];
   if (!state.choosing || !upgrade) return;
-  for (const p of activePlayers()) upgrade.apply(p);
+  upgrade.apply(player);
+  if (state.coop) {
+    // the partner only benefits from every other upgrade (a friend online gets them all)
+    state.partnerTurn = !state.partnerTurn;
+    if (state.remote || state.partnerTurn) upgrade.apply(player2);
+  }
   state.upgradesTaken[upgrade.id] = (state.upgradesTaken[upgrade.id] || 0) + 1;
   state.choosing = false;
   state.nextWaveTimer = 7; // time for the villagers to celebrate
@@ -860,7 +874,8 @@ function fireFrom(p, ambush) {
   const dive = p.position.y > 0.5 ? -Math.min(0.45, p.position.y / 10) : 0;
   for (const dir of p.shotDirections()) {
     const aim = dive ? dir.clone().setY(dive).normalize() : dir;
-    bullets.fire(p.position, aim, p.damage * (ambush ? 3 : 1) * (p.buffTime > 0 ? 1.5 : 1), {
+    const soft = p === player2 && state.coop && !state.remote ? partner().damage : 1;
+    bullets.fire(p.position, aim, p.damage * soft * (ambush ? 3 : 1) * (p.buffTime > 0 ? 1.5 : 1), {
       pierce: p.pierce || ambush,
       explosive: p.explosive,
       size: ambush ? 2 : 1,
@@ -955,6 +970,12 @@ function updatePlayers(dt) {
   if (state.coop && !player2.dead) {
     const target = nearestEnemyPoint(player2.position);
     aimPoint2.copy(target || player2.position.clone().addScaledVector(player2.aimDir, 5));
+    if (target && !state.remote) {
+      // the partner is not a perfect shot
+      const reach = target.distanceTo(player2.position) * partner().miss;
+      aimPoint2.x += (Math.random() - 0.5) * 2 * reach;
+      aimPoint2.z += (Math.random() - 0.5) * 2 * reach;
+    }
     const p2keys = state.remote ? remoteKeys : botKeys;
     if (!state.remote) botThink(dt);
     if (state.remote) {
@@ -974,9 +995,12 @@ function updatePlayers(dt) {
     player2.update(dt, p2keys, aimPoint2, obstacles);
     if (player2.dashTime > 0) effects.burst(player2.position, 0xffcc88, 1, 0.25, 2);
     // Player 2 also fires by himself at bees that are close, so one hand is enough to play him
-    const p2near = target && target.distanceTo(player2.position) < 16;
+    const p2near = !state.remote && target && target.distanceTo(player2.position) < partner().range;
     const p2shoot = p2near || (state.remote && remote.shoot);
-    if (p2shoot && player2.canShoot()) fireFrom(player2, false);
+    if (p2shoot && player2.canShoot()) {
+      fireFrom(player2, false);
+      if (!state.remote) player2.cooldown /= partner().rate; // slower than the hero
+    }
 
     // Keep the two players on the same screen
     if (!player.dead) {
