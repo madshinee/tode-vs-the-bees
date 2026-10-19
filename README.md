@@ -102,4 +102,3 @@ The displayed score is rounded down.
 (K makes the villagers cheer) jump to a level, wave, time of day, zoom or place. `?touch` shows the
 touch controls on a computer.
 
-> The Wolof lines were written with care but should be checked by a native speaker.
