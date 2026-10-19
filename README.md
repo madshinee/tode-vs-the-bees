@@ -72,6 +72,17 @@ your upgrades. The harder the difficulty, the less it helps. A fallen partner ge
 - **Juice**: screen shake, floating damage numbers, buzzing bees, a hopping hand-built frog.
 - **Tactical pause** to plan your strategy, a day/night cycle, combos, power-ups and three difficulties.
 
+## Known limitations
+
+- **Online co-op is switched off.** A prototype exists in the code (`src/components/net.js`): a friend opens a
+  share link and plays the orange frog on their own screen, while the host streams the game to them with
+  WebRTC (PeerJS). It worked between two browsers on one computer, but over two different networks it was
+  unreliable: with a phone on mobile data it stayed stuck on "Connecting...", and on Wi-Fi the friend dropped
+  right after the start. It would need a relay (TURN) server to be dependable, so the button is hidden
+  (`btn-online` in `index.html`) and the game offers 1 Player or 2 Players (with the computer partner).
+- The Wolof lines were written with care but should be checked by a native speaker.
+- The game starts in English; French can be chosen in the settings or on the title screen.
+
 ## Score
 
 Defined in `src/components/scoring.js`: 1 point for every 10 seconds survived (`SCORE_PER_SECOND = 0.1`),

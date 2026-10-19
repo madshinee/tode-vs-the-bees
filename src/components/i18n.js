@@ -8,8 +8,7 @@ let lang = 'en';
 
 try {
   const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved in LOCALES) lang = saved;
-  else if ((navigator.language || '').toLowerCase().startsWith('fr')) lang = 'fr';
+  if (saved in LOCALES) lang = saved; // English by default; French is a choice in the settings
 } catch {
   // storage can be unavailable; English is used
 }
