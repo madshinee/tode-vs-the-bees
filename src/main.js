@@ -393,6 +393,14 @@ while (player.level < startLevel) player.addXp(player.xpNeeded);
 const activePlayers = () => (state.coop ? [player, player2] : [player]);
 const alivePlayers = () => activePlayers().filter((p) => !p.dead);
 
+// Where the villagers gather to cheer: around Tode, or between both players in co-op
+const cheerCenter = new THREE.Vector3();
+function cheerFocus() {
+  const alive = alivePlayers();
+  if (alive.length < 2) return (alive[0] || player).position;
+  return cheerCenter.copy(alive[0].position).add(alive[1].position).multiplyScalar(0.5);
+}
+
 // Where new enemies appear: around the middle of the living players
 function spawnCenter() {
   const alive = alivePlayers();
@@ -647,7 +655,7 @@ function updateVillagers(dt, time) {
         say('village', t('say.cry'), 4);
       }
     },
-    { hide: state.waveActive, focus: player.position }
+    { hide: state.waveActive, focus: cheerFocus() }
   );
 }
 
