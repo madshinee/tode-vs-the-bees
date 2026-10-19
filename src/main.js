@@ -277,6 +277,14 @@ function doBomb() {
 }
 
 window.addEventListener('keyup', (e) => keys.delete(e.code));
+// A key released while the window was not focused never sends its keyup:
+// forget everything held so nobody keeps walking or shooting by themselves.
+const releaseAll = () => {
+  keys.clear();
+  mouseDown = false;
+};
+window.addEventListener('blur', releaseAll);
+document.addEventListener('visibilitychange', () => document.hidden && releaseAll());
 window.addEventListener('mousedown', () => {
   mouseDown = true;
   if (state.over) restart();
