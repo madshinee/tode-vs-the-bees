@@ -1532,6 +1532,8 @@ function setupHost() {
 }
 
 $('btn-online').addEventListener('click', setupHost);
+// online co-op is still being tested: the button only shows with ?online in the address
+if (params.has('online')) $('btn-online').hidden = false;
 $('online-close').addEventListener('click', () => {
   $('online-overlay').classList.remove('open');
   if (!state.remote) {
@@ -1735,15 +1737,20 @@ function animate() {
   cameraTarget.copy(spawnCenter());
   // Debug: ?village looks at the first village
   if (params.has('village')) cameraTarget.set(villages[0].x, 0, villages[0].z);
+  // Title screen: the camera circles slowly over a living village behind the menu
+  const onTitle = !state.started && !state.guest && $('title').style.display !== 'none';
+  document.body.classList.toggle('on-title', onTitle);
+  if (onTitle) cameraTarget.set(villages[1].x, 0.5, villages[1].z);
   const strike = weather.update(dt, cameraTarget, enemies.list);
   if (strike && state.started && !state.paused && !state.over && !state.choosing) lightningStrike(strike);
   setRain(state.started ? weather.intensity : 0);
   dayNight.update(time + timeOffset, weather.intensity, weather.flash);
   if (state.auto) zoom = (Number(params.get('zoom')) || 1.35) + 0.15 * Math.sin(time * 0.25); // ?zoom sets the trailer camera
-  const orbit = party > 0 ? Math.sin(time * 0.5) * 0.45 : state.auto ? Math.sin(time * 0.18) * 0.35 : 0;
+  const orbit = onTitle ? time * 0.07 : party > 0 ? Math.sin(time * 0.5) * 0.45 : state.auto ? Math.sin(time * 0.18) * 0.35 : 0;
   const offset = cameraOffset().applyAxisAngle(new THREE.Vector3(0, 1, 0), orbit);
   if (slowmo > 0) offset.multiplyScalar(0.8); // zoom in on the final blow
   if (party > 0) offset.multiplyScalar(0.62); // come closer to see everybody dance
+  if (onTitle) offset.multiplyScalar(1.25).setY(offset.y * 0.75); // a wide, low shot over the village
   cameraBase.lerp(cameraTarget.clone().add(offset), 0.1);
   ground.material.color.lerp(groundTarget, 0.02);
   shake.update(dt);

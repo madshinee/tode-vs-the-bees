@@ -922,9 +922,29 @@ canvas.game {
 #title {
   display: flex;
   z-index: 10;
+  /* the live 3D village shows through a warm sunset veil */
   background:
-    radial-gradient(circle at 50% 120%, #e0742a 0%, rgba(224, 116, 42, 0) 55%),
-    linear-gradient(180deg, #2b1238 0%, #6a2c4d 55%, #c4552e 100%);
+    radial-gradient(ellipse at 50% 45%, rgba(20, 8, 24, 0.55) 0%, rgba(20, 8, 24, 0.15) 60%, rgba(20, 8, 24, 0.55) 100%),
+    linear-gradient(180deg, rgba(43, 18, 56, 0.55) 0%, rgba(106, 44, 77, 0.15) 50%, rgba(196, 85, 46, 0.45) 100%);
+}
+
+.title-card {
+  position: relative;
+  border-radius: 26px;
+  background: linear-gradient(180deg, rgba(24, 10, 20, 0.5), rgba(24, 10, 20, 0.2) 45%, rgba(24, 10, 20, 0.5));
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+/* a woven kente-style band under the title */
+.title-card .tagline::after {
+  content: '';
+  display: block;
+  width: min(360px, 70vw);
+  height: 10px;
+  margin: 14px auto 6px;
+  border-radius: 4px;
+  background: repeating-linear-gradient(90deg, #f2b81a 0 18px, #1e7a3c 18px 26px, #c7361f 26px 44px, #111 44px 48px, #f2b81a 48px 52px, #1e5aa8 52px 60px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .title-card {
@@ -1859,4 +1879,17 @@ body.cut3d #touch {
 @keyframes flash-pop {
   0% { opacity: 1; }
   100% { opacity: 0; }
+}
+
+/* title screen: hide the game HUD over the live village */
+body.on-title #hud,
+body.on-title #pills,
+body.on-title #abilities,
+body.on-title #radar,
+body.on-title #indicators,
+body.on-title #rhythm,
+body.on-title #pause-btn,
+body.on-title #help,
+body.on-title #boss {
+  visibility: hidden;
 }

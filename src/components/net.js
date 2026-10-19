@@ -5,6 +5,12 @@ import Peer from 'peerjs';
 // HUD and sends back his controls. Messages are plain objects.
 export const hooks = { banner: null, say: null }; // the host mirrors banners and dialogue to the guest
 
+// How the two players find a path to each other. STUN finds a direct path; TURN is a relay
+// used when a direct path is blocked (mobile data, strict routers).
+// (A TURN relay would need short-lived credentials from a server, so none is used here.)
+const ICE_SERVERS = [{ urls: 'stun:stun.l.google.com:19302' }];
+const peerOptions = () => ({ config: { iceServers: ICE_SERVERS } });
+
 let peer = null;
 let conn = null;
 
@@ -29,9 +35,12 @@ export function closeNet() {
 export function hostGame({ onJoin, onData, onLeave }) {
   closeNet();
   return new Promise((resolve, reject) => {
-    peer = new Peer();
+    peer = new Peer(peerOptions());
     peer.on('open', (id) => resolve(`${location.origin}${location.pathname}?join=${id}`));
-    peer.on('error', reject);
+    peer.on('error', (e) => {
+      console.warn('[net] host error', e.type || e);
+      reject(e);
+    });
     peer.on('connection', (c) => {
       if (conn && conn.open) {
         c.close(); // only one friend
@@ -56,7 +65,7 @@ export function streamTo(stream) {
 // Guest: connects to the host with the id from the link.
 export function joinGame(hostId, { onOpen, onVideo, onData, onClose, onError }) {
   closeNet();
-  peer = new Peer();
+  peer = new Peer(peerOptions());
   peer.on('error', onError);
   peer.on('call', (call) => {
     call.answer();
