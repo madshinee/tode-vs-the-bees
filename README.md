@@ -92,12 +92,35 @@ The displayed score is rounded down.
 
 ## Made with
 
-- **Three.js** (3D) and **Vite**. No game engine, no audio files, no image files.
-- The bee model comes from the course. The people (villagers, Mamadou and Awa) are the free **Adobe Mixamo** mannequins (X Bot and Y Bot) with Mixamo's motion-captured animations (idle, talking, walking, running, terrified, cheering, dancing); the boubous, wax cloth, gele, caps and jewellery are built in code. Everything else is original: the frog, the huts, villagers, griots,
-  trees, the icons (SVG) and the characters of the opening scene are built in code.
-- **All the music and sound effects are synthesized** with the Web Audio API (a kora, gungung, sabar and
-  tama groove inspired by mbalax).
-- Written with the help of an AI coding agent, prompt by prompt, checking each step.
+- **Three.js** (3D) and **Vite**. No game engine, no audio files, no image files, no font files.
+- Everything the player sees and hears was made for this project in code, except the course's bee model
+  (see *Third-party assets* below): Tode the frog, the villagers and griots (body, skeleton and motions are
+  generated in `src/components/people.js`), their clothes (boubous, wax, bogolan, gele, jewellery), the huts,
+  trees, pirogues, the SVG icons and the characters of the opening scene.
+- **All the music and sound effects are synthesized** in real time with the Web Audio API (a kora, gungung,
+  sabar and tama groove inspired by mbalax). No recorded or commercially released music or sound is used.
+
+## Third-party assets and licences
+
+| Asset | Where it is used | Source | Licence |
+| --- | --- | --- | --- |
+| Course project *Build a Game with an AI Coding Agent* (starting code, the bee model `public/models/enemy.glb`) | Base of the game, the bees | JetBrains Academy course | MIT, see `LICENSE` |
+| [three.js](https://github.com/mrdoob/three.js) | 3D rendering, loaders and helpers | npm `three` | MIT |
+| [Vite](https://github.com/vitejs/vite) | Dev server and build | npm `vite` | MIT |
+| [PeerJS](https://github.com/peers/peerjs) | Online co-op prototype (switched off) | npm `peerjs` | MIT |
+
+No other third-party code, models, textures, fonts, music or sound recordings are included. No trademarks or
+logos are used.
+
+## AI tools used
+
+As allowed by the challenge, AI coding assistants were used:
+
+- **Claude** (Anthropic, through Claude Code) and **SWE**: writing and refactoring the code, the procedural
+  models and animations, the synthesized music and sound effects, the UI, the English/French/Wolof texts,
+  this README, and the recording and editing of the gameplay screencast.
+- **The author** directed the whole project: the idea and the West African setting, the features and their
+  order, the look and feel, the gameplay balance, testing every step and deciding what to keep or remove.
 
 ## Project layout
 
@@ -105,7 +128,7 @@ The displayed score is rounded down.
 - `src/components/`: player, frog, enemies, gear (costumes), defense (villages), villagers, griots,
   rhythm, weather, bullets, bombs, pickups, effects, juice, environment, map, upgrades, achievements,
   dialogue, cutscene, hud, radar, icons, menus, i18n/locales, input and touch, audio (sfx + music)
-- `public/models/`: the bee model and house from the course, the frog, and the Mixamo mannequins plus animations for the people (see Credits)
+- `public/models/enemy.glb`: the bee model from the course (everything else is built in code)
 
 ## Debug URLs
 
