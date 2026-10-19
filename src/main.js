@@ -1264,7 +1264,7 @@ const saved = (key, fallback, allowed) => {
   return allowed.includes(value) ? value : fallback;
 };
 selectDifficulty(saved('difficulty', 'normal', Object.keys(DIFFICULTIES)));
-selectMode(saved('mode', '1', ['1', '2']));
+selectMode('1'); // 2-player co-op is switched off: one hero, one village to save
 selectOutfit(saved('outfit', 'none', ['none', 'boubou', 'wax', 'sahel']));
 $('play').disabled = false;
 $('play').dataset.i18n = 'play';

@@ -1838,3 +1838,8 @@ body.cut3d #indicators,
 body.cut3d #touch {
   display: none !important;
 }
+
+/* 2-player and online co-op are switched off */
+[hidden] {
+  display: none !important;
+}

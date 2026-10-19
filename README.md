@@ -3,7 +3,7 @@
 A 3D wave-survival game built with **Three.js** and **Vite** for the JB-BYGC. The Queen Bee's swarm is invading the villages of a West African-inspired savanna. You are
 **Tode**, a frog who has to defend the villages, level up, evolve and wear the crown.
 
-Playable in English and French, with keyboard and mouse, a gamepad, a touch screen, or two players on one keyboard.
+Playable in English and French, with keyboard and mouse, a gamepad, or a touch screen.
 
 ## Run it
 
@@ -33,10 +33,6 @@ npm run preview  # try the production build
 
 Stand still for 2 seconds (Level 2) to charge an **ambush** shot: triple damage and piercing.
 
-**Two players on one keyboard:** pick *2 Players* on the title screen. Player 1 uses WASD/ZQSD and the
-mouse. Player 2 uses the arrow keys, **Enter** to shoot (auto-aim) and **Right Shift** to dash. Fallen
-players get back up after the wave.
-
 ## What makes it different
 
 - **Defend the villages.** Some bees are *raiders* (orange ring): they fly to a village and attack it.
@@ -60,7 +56,6 @@ players get back up after the wave.
 - **Daily challenge**: the same bees for everybody on a given day, with its own best score.
 - **Griot tales and proverbs**: a short tale between waves and a proverb on every upgrade card.
 - **An island by the sea**: beach, palm trees and brightly painted fishing pirogues (with fishermen in boubous) bobbing on the waves.
-- **Online co-op**: share a link, a friend plays the orange frog on his own screen; kills are counted per player.
 - **Three landscapes** that change every 5 waves: golden savanna, burnt savanna, river lands.
 - **Village quests**: a village asks for help each wave; keep it above 60% safety for a reward.
 - **Party time**: slow-motion on a boss's last blow, then falling petals and an orbiting camera while the villagers dance.
