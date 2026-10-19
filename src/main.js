@@ -558,6 +558,8 @@ function waveCleared() {
   revivePlayers();
   state.options = pickUpgrades(player, 3);
   showUpgrades(state.options, chooseUpgrade);
+  // trailer mode: Tode picks a card by himself, after a short look
+  if (state.auto) setTimeout(() => chooseUpgrade(Math.floor(Math.random() * state.options.length)), 1600);
 }
 
 function chooseUpgrade(index) {
@@ -1737,7 +1739,7 @@ function animate() {
   if (strike && state.started && !state.paused && !state.over && !state.choosing) lightningStrike(strike);
   setRain(state.started ? weather.intensity : 0);
   dayNight.update(time + timeOffset, weather.intensity, weather.flash);
-  if (state.auto) zoom = 1.35 + 0.3 * Math.sin(time * 0.25);
+  if (state.auto) zoom = (Number(params.get('zoom')) || 1.35) + 0.15 * Math.sin(time * 0.25); // ?zoom sets the trailer camera
   const orbit = party > 0 ? Math.sin(time * 0.5) * 0.45 : state.auto ? Math.sin(time * 0.18) * 0.35 : 0;
   const offset = cameraOffset().applyAxisAngle(new THREE.Vector3(0, 1, 0), orbit);
   if (slowmo > 0) offset.multiplyScalar(0.8); // zoom in on the final blow
