@@ -398,7 +398,15 @@ const rhythm = new Rhythm($('rhythm'));
 const weather = new Weather(scene);
 const floaters = new FloatingTexts(scene);
 const bombs = new Bombs(scene);
-const ally = new Ally(scene, frogOrange);
+const frogFriend = createFrogModel('blue');
+const ally = new Ally(scene, frogFriend);
+const allyTag = createTag(t('ally.tag'), '#6ad0ff');
+allyTag.visible = true; // it hides with the friend
+allyTag.scale.set(1.7, 0.85, 1);
+ally.mesh.add(allyTag);
+onLangChange(() => {
+  allyTag.material.map = createTag(t('ally.tag'), '#6ad0ff').material.map;
+});
 
 // Debug: ?wave=5 and ?level=10 start at that wave / level
 state.wave = Number(params.get('wave') || 1) - 1;
@@ -815,6 +823,14 @@ function explodeBomb(position) {
   areaDamage(position, radius, 5, 3);
 }
 
+// A short golden flash on the big combos
+function flashScreen() {
+  const el = $('flash');
+  el.classList.remove('go');
+  void el.offsetWidth; // restart the animation
+  el.classList.add('go');
+}
+
 function killEnemy(e, index, who = 0) {
   state.kills[who]++;
   if (player.addXp(Math.ceil(e.score / 5)) > 0) levelUp();
@@ -823,7 +839,8 @@ function killEnemy(e, index, who = 0) {
   if ([5, 10, 20, 35].includes(state.combo)) {
     showBanner(t(`streak.${state.combo}`));
     sfx.upgrade();
-    shake.add(0.2);
+    shake.add(state.combo >= 20 ? 0.45 : 0.25);
+    if (state.combo >= 10) flashScreen();
   }
   addStat('kills');
   unlock('first_blood');

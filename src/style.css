@@ -1843,3 +1843,20 @@ body.cut3d #touch {
 [hidden] {
   display: none !important;
 }
+
+/* golden flash on big combos */
+#flash {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0;
+  background: radial-gradient(circle at center, rgba(255, 236, 160, 0.55), rgba(255, 190, 60, 0) 70%);
+}
+#flash.go {
+  animation: flash-pop 0.45s ease-out;
+}
+@keyframes flash-pop {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}

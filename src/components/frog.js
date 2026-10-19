@@ -6,6 +6,7 @@ import * as THREE from 'three';
 const PALETTES = {
   green: { skin: 0x3fb950, dark: 0x1d6b30, belly: 0xeaf5b5, toe: 0x34a047 },
   orange: { skin: 0xff9a4d, dark: 0x9a4a12, belly: 0xffe6b8, toe: 0xf08a3c },
+  blue: { skin: 0x4fb8e8, dark: 0x1b5f8a, belly: 0xe3f6ff, toe: 0x3aa3d6 }, // the summoned friend
 };
 
 export function createFrogModel(paletteName = 'green') {
