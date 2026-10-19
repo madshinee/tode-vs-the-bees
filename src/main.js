@@ -934,7 +934,9 @@ function updatePlayers(dt) {
     }
     player2.update(dt, p2keys, aimPoint2, obstacles);
     if (player2.dashTime > 0) effects.burst(player2.position, 0xffcc88, 1, 0.25, 2);
-    const p2shoot = state.remote ? remote.shoot : keys.has('Enter') || keys.has('NumpadEnter');
+    // Player 2 also fires by himself at bees that are close, so one hand is enough to play him
+    const p2near = target && target.distanceTo(player2.position) < 16;
+    const p2shoot = p2near || (state.remote ? remote.shoot : keys.has('Enter') || keys.has('NumpadEnter'));
     if (p2shoot && player2.canShoot()) fireFrom(player2, false);
 
     // Keep the two players on the same screen
